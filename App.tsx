@@ -1,20 +1,58 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomePage from './screens/HomePage';
+import FilterPage from './screens/FilterPage';
+import AddMenuPage from './screens/AddMenuPage';
+
+
+interface MenuItem {
+  dishName: string;
+  description: string;
+  course: string;
+  price: number;
+}
+
+
+const Tab = createBottomTabNavigator(); //Bottom navigator to navigate between screens
 
 export default function App() {
+  
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+
+  
+  const addMenuItem = (item: MenuItem) => {
+    setMenuItems([...menuItems, item]); //create array when menu item is added 
+  };
+
+  //This removes menu item
+  const removeMenuItem = (index: number) => {
+    const newMenu = [...menuItems];
+    newMenu.splice(index, 1);
+    setMenuItems(newMenu);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Tab.Navigator>
+        
+        <Tab.Screen name="Home">
+          {() => <HomePage menuItems={menuItems} onRemoveMenuItem={removeMenuItem} />}
+        </Tab.Screen>
+
+        
+        <Tab.Screen name="Filter">
+          {() => <FilterPage menuItems={menuItems} />}
+        </Tab.Screen>
+
+        
+        <Tab.Screen name="Add Menu">
+          {() => <AddMenuPage onAddMenuItem={addMenuItem} />}
+        </Tab.Screen>
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
+
